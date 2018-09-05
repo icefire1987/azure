@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="azure_le:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/azure_le_jar</output-path>
+    <root id="archive" name="azure_le.jar">
+      <element id="module-output" name="azure_le" />
+    </root>
+  </artifact>
+</component>

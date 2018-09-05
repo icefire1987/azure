@@ -600,7 +600,13 @@ class View implements java.util.Observer {
         JTextField txtPreview = null;
         switch(type){
             case "ean":
-                lblPreview = new JLabel("EAN");
+
+                if(defaultVal.length()>0){
+                    lblPreview = new JLabel(defaultVal);
+                }else{
+                    lblPreview = new JLabel("EAN");
+                }
+
                 break;
             case "kennung":
                 lblPreview = new JLabel("Anischt");

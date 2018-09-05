@@ -89,6 +89,7 @@ public class Controller {
                 break;
             case "kennung_func":
                 System.out.println("Controller: add "+name);
+                this.model.kennung_func = true;
                 this.model.pattern_add(name);
                 this.view.pattern_show(name,defaultVal);
                 break;
@@ -142,6 +143,7 @@ public class Controller {
         view.setField("trennzeichen",this.model.trennzeichen.toString());
         view.log("Trennzeichen gesetzt: \r\n"+ this.model.trennzeichen);
     }
+
     void setKennung(String kennung_source,String source_split, String kennung_target, String target_split){
 
         this.model.setKennung(kennung_source.split(source_split), "source");
@@ -152,10 +154,10 @@ public class Controller {
         view.log("Kennung gesetzt");
     }
 
-    void setKennung_func(){
+    void setKennung_func(String name){
 
         this.model.setKennung(null, "func");
-
+        this.model.kennung_func_name = name;
         view.setTextArea("Kennung",null);
 
         view.log("Kennung_Func gesetzt");
@@ -289,10 +291,20 @@ public class Controller {
                 System.out.println("Controller: preset Sols");
                 this.model.favorite_path = Paths.get("//10.1.10.10/produktion/03_Operations/SOL'S");
                 this.setTrennzeichen("_");
-                this.setKennung_func();
+                this.setKennung_func("sols");
                 this.addPattern("reset",null);
-                this.addPattern("ean",null);
-                this.addPattern("kennung","A");
+                this.addPattern("ean","vABC123");
+                this.addPattern("kennung_func","A");
+                break;
+            case "sols_cropped":
+                System.out.println("Controller: preset Sols_Cropped");
+                this.model.favorite_path = Paths.get("//10.1.10.10/produktion/03_Operations/SOL'S");
+                this.setTrennzeichen("_");
+                this.setKennung_func("sols");
+                this.model.rules.add("sols_cropped");
+                this.addPattern("reset",null);
+                this.addPattern("ean","vcABC123");
+                this.addPattern("kennung_func","A");
                 break;
 
         }

@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,9 +25,13 @@ public class Model extends java.util.Observable {
     public Path source;
     public Path target;
     public String trennzeichen;
+    public Boolean kennung_func= false;
+    public String kennung_func_name;
+
     public List<String> kennung_source;
     public List<String> kennung_target;
     public List<String> pattern;
+    public List<String> rules;
     public HashMap<String, String> fileobj;
 
     public Model(){
@@ -114,16 +119,38 @@ public class Model extends java.util.Observable {
         this.fileobj.put("ext",temp_ext[1]);
         this.fileobj.put("filename",temp_ext[0]);
 
+
         temp_pattern = this.fileobj.get("filename").split("(" + Pattern.quote(this.trennzeichen) + ")",2);
 
+        if(this.rules!=null && this.rules.size()>0){
+            if(this.rules.contains("sols_cropped")){
+                String first = temp_pattern[0].substring(0,1);
+                String rest = temp_pattern[0].substring(1);
+                temp_pattern[0] = first + "c" + rest;
+            }
+        }
         this.fileobj.put("sourcename",temp_pattern[0]);
-        if(temp_pattern.length>1){
-            String[] x =  temp_pattern[1].split("(" + Pattern.quote(this.trennzeichen) + ")",2);
-            System.out.println(x.length);
-            if(x.length>1) {
-                this.fileobj.put("kennung_source", x[1]);
-                this.fileobj.put("kennung_target", null);
+        if(temp_pattern.length>1) {
+            String[] x = temp_pattern[1].split("(" + Pattern.quote(this.trennzeichen) + ")", 2);
 
+            if (x.length > 1) {
+                //Element nach letztem Trennzeichen zur Umbenennung nutzen
+                this.fileobj.put("kennung_source", x[(x.length-1)]);
+                this.fileobj.put("kennung_target", null);
+            } else if (x.length == 1) {
+                this.fileobj.put("kennung_source", x[0]);
+                this.fileobj.put("kennung_target", null);
+            }
+
+            if (this.kennung_func) {
+                String result = "";
+               switch(this.kennung_func_name){
+                   case "sols":
+                       result = rename_sols(x[0]);
+                       break;
+               }
+                this.fileobj.put("kennung_target", result);
+            } else {
                 if (this.kennung_source != null && this.kennung_source.size() > 0) {
                     for (int i = 0; i < this.kennung_source.size(); i++) {
                         if (this.fileobj.get("kennung_source").equals(this.kennung_source.get(i))) {
@@ -133,29 +160,11 @@ public class Model extends java.util.Observable {
                         }
                     }
                 }
-            }else if(x.length==1){
-                if(this.kennung_target == null){
-//SOLS Sonderlöung
-                    String last_char = x[0].substring(x[0].length() - 1);
-                    this.fileobj.put("kennung_source", x[0]);
-                    this.fileobj.put("kennung_target", last_char);
-                }else{
-                    this.fileobj.put("kennung_source", x[0]);
-                    this.fileobj.put("kennung_target", null);
-
-                    if (this.kennung_source != null && this.kennung_source.size() > 0) {
-                        for (int i = 0; i < this.kennung_source.size(); i++) {
-                            if (this.fileobj.get("kennung_source").equals(this.kennung_source.get(i))) {
-                                if (this.kennung_target != null && this.kennung_target.size() > 0) {
-                                    this.fileobj.put("kennung_target", this.kennung_target.get(i));
-                                }
-                            }
-                        }
-                    }
-                }
-
             }
+
         }
+
+
         return this.fileobj;
     }
 
@@ -203,7 +212,12 @@ public class Model extends java.util.Observable {
         }
         return false;
     }
+    // x = split nach dem ersten trennzeichen, gesplittet nach weiteren trennzeichen
+    public String rename_sols(String x){
 
+        return  x.substring(x.length() - 1);
+
+    }
 
 
 
